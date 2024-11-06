@@ -16,7 +16,7 @@ import {
 } from "~/types/remix";
 
 export function meta({ error }: MetaArguments): MetaResult {
-  return [{ title: error ? "Error!" : "Trains!" }];
+  return [{ title: error ? "Error!" : "Pretzel" }];
 }
 
 export function links(): LinksResult {
