@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     remix({
       future: {
+        unstable_optimizeDeps: true,
         v3_fetcherPersist: true,
         v3_lazyRouteDiscovery: true,
         v3_relativeSplatPath: true,
