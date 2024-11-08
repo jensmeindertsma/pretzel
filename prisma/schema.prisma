@@ -8,7 +8,26 @@ generator client {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
+  id       String    @id @default(cuid())
+  email    String    @unique
+  name     String
+  password Password?
+}
+
+model Password {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+  hash   String
+}
+
+model Item {
+  name           String @id
+  weight         Int
+  calories       Int
+  sugar          Int
+  protein        Int
+  carbohydrates  Int
+  saturatedFat   Int
+  unsaturatedFat Int
+  fiber          Int
 }
