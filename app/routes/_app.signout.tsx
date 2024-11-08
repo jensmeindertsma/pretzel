@@ -15,5 +15,9 @@ export async function loader({ request }: LoaderArguments) {
 export async function action({ request }: LoaderArguments) {
   const session = await getSession(request);
 
+  if (!session.isAuthenticated) {
+    return redirect("/");
+  }
+
   return session.end({ redirectTo: "/" });
 }
