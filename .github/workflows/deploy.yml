@@ -3,31 +3,7 @@ on:
   push:
     branches: main
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run tests
-        run: echo "TODO run tests"
-
-  build:
-    needs: [test]
+  upload:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -44,5 +20,18 @@ jobs:
           load: true
           tags: pretzel:latest
 
-      - name: Inspect image
-        run: docker images
+      - name: Prepare SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Add SSH host to known_hosts
+        run: |
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Save image
+        run: docker save pretzel:latest | gzip | ssh ${{ secrets.SSH_USER}}@${{secrets.SSH_HOST}} docker load
+
+      - name: Run redeploy script
+        run: ssh ${{ secrets.SSH_USER}}@${{secrets.SSH_HOST}} ./redeploy.sh pretzel
